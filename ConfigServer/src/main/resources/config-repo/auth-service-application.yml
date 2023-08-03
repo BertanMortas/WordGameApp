@@ -1,0 +1,35 @@
+server:
+  port: 8060
+spring:
+  zipkin:
+    enabled: true
+    base-url: http://localhost:9411
+    service:
+      name: auth-service
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: java7
+    password: root
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/WordGameAuthDB
+    username: postgres
+    password: Bm15481527
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+jwt:
+  secretkey: ${secretkey}
+  audience: ${audience}
+  issuer: ${issuer}
+rabbitmq:
+  exchange: exchange
+  mailQueue: mailQueue
+  mailBindingKey: mailBindingKey
+  forgotPasswordQueue: forgot-password-queue
+  forgotPasswordBindingKey: forgot-password-key
