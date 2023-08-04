@@ -34,6 +34,4 @@ public class UserProfile extends Base{
     private String avatar;
     @Builder.Default
     private EStatus status = EStatus.PENDING;
-
-
 }
