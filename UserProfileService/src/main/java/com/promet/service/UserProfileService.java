@@ -48,25 +48,6 @@ public class UserProfileService extends ServiceManager<UserProfile, String> {
         return true;
     }
 
-    public GetNameByIdResponseDto findNameById(String userId) {
-        return IUserProfileMapper.INSTANCE.toGetNameDto(findById(userId).get());
-    }
-
-
-
-    public Boolean deleteEmployee(String token, String email) {
-        List<String> roles = jwtTokenProvider.getRolesFromToken(token);
-        if (!roles.contains("MANAGER"))
-            throw new UserProfileManagerException(ErrorType.AUTHORIZATION_ERROR);
-        Optional<UserProfile> optionalUserProfile = userProfileRepository.findByEmail(email);
-        if (optionalUserProfile.isEmpty())
-            throw new UserProfileManagerException(ErrorType.USER_NOT_FOUND);
-        optionalUserProfile.get().setStatus(EStatus.DELETED);
-        update(optionalUserProfile.get());
-        authManager.deleteAuth(optionalUserProfile.get().getAuthId());
-        return true;
-    }
-
     public Boolean updateManagerStatus(Long authId) {
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByAuthId(authId);
         if (optionalUserProfile.isEmpty())
@@ -82,9 +63,6 @@ public class UserProfileService extends ServiceManager<UserProfile, String> {
         update(userProfile.get());
         return true;
     }
-
-
-
     public GetNameAndSurnameFromUserProfileResponseDto getNameAndSurname(String userId) {
         Optional<UserProfile> optionalUser = findById(userId);
         if (optionalUser.isEmpty()) {
@@ -96,15 +74,7 @@ public class UserProfileService extends ServiceManager<UserProfile, String> {
                 .build();
 
     }
-
-    public UserProfile getUserProfile(String token) {
-        Optional<Long> optionalAuthId = jwtTokenProvider.getIdFromToken(token);
-        if (optionalAuthId.isEmpty()) throw new UserProfileManagerException(ErrorType.USER_NOT_FOUND);
-        return userProfileRepository.findByAuthId(optionalAuthId.get()).get();
-    }
-
-
-    public Boolean forgotPasswordUser(UserprofileChangePasswordRequestDto dto) { // denemedim bi dene
+    public Boolean forgotPasswordUser(UserprofileChangePasswordRequestDto dto) {
         Optional<UserProfile> userProfile = userProfileRepository.findByAuthId(dto.getAuthId());
         if (userProfile.isEmpty()) {
             throw new UserProfileManagerException(ErrorType.USER_NOT_FOUND);

@@ -94,12 +94,6 @@ public class TriesService extends ServiceManager<Tries, Long> {
         tries.get().setPlayerAuthId(authId.get());
         tries.get().setCorrectlyGuessedLetters(correctlyGuessedLetters);
         tries.get().setCorrectlyGuessedLettersInTheWrongPlace(correctlyGuessedLettersInTheWrongPlace);
-        // ilk deneme mi yoksa ikinci denememi kontrolü
-        // lowercase yapılacak
-        // try kelime uzun olursa hata atıyor
-        //  kelime de correct word but worng place de kelime uzunluğuna kadar bakıyor
-        //  eğer kelimeden uzun bir deneme olursa o kısmı doğru yazmıyor
-        // todo cenk kodunda uzun denedik kısa denyeceğiz deneme -> asds gibi
         save(tries.get());
         return CreateTriesResponseDto.builder()
                 .guessedWord(dto.getTriedWords())
