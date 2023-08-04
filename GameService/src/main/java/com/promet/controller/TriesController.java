@@ -18,5 +18,9 @@ public class TriesController {
     public ResponseEntity<CreateTriesResponseDto> createTries(@RequestBody CreateTriesRequestDto dto){
         return ResponseEntity.ok(triesService.createTriesFixed(dto));
     }
-
+    @GetMapping("/find-life/{token}/{gameId}")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    public ResponseEntity<Integer> findRemainingLifeForGames(@PathVariable String token, @PathVariable Long gameId){
+        return ResponseEntity.ok(triesService.findRemainingLifeForGames(token, gameId));
+    }
 }

@@ -67,26 +67,29 @@ public class TriesService extends ServiceManager<Tries, Long> {
         for (char triedWordChar : triedWordIndexMap.values()) {
             triedWordCharCount.put(triedWordChar, triedWordCharCount.getOrDefault(triedWordChar, 0) + 1);
         }
-
         int correctlyGuessedLetters = 0;
         int correctlyGuessedLettersInTheWrongPlace = 0;
 
-        int loopCount = 0;
-        keyWord.length() > dto.getTriedWords().length() ? loopCount=keyWord.length():loopCount=dto.getTriedWords().length();
+        int loopCount = Math.max(keyWord.length(), dto.getTriedWords().length());
 
-        for (int i = 0; i < keyWord.length(); i++) {
-            char keywordChar = keywordIndexMap.get(i);
+        for (int i = 0; i < loopCount; i++) {
+
+            char keywordChar = keywordIndexMap.get(i>=keyWord.length()?keyWord.length()-1:i);
             char triedWordChar = i < dto.getTriedWords().length() ? triedWordIndexMap.get(i) : '*';
-            if (triedWordChar == keywordChar) {
+            if (triedWordChar == keywordChar && i < keyWord.length()) {
                 correctlyGuessedLetters++;
                 result.append(triedWordChar);
+                keywordCharCount.put(triedWordChar, keywordCharCount.get(triedWordChar) - 1);
             } else {
                 if (keywordCharCount.getOrDefault(triedWordChar, 0) > 0) {
                     correctlyGuessedLettersInTheWrongPlace++;
                     keywordCharCount.put(triedWordChar, keywordCharCount.get(triedWordChar) - 1);
                 }
-                result.append('*');
+                if(i < keyWord.length()){
+                    result.append('*');
+                }
             }
+
         }
         tries.get().setPlayerAuthId(authId.get());
         tries.get().setCorrectlyGuessedLetters(correctlyGuessedLetters);
@@ -94,8 +97,9 @@ public class TriesService extends ServiceManager<Tries, Long> {
         // ilk deneme mi yoksa ikinci denememi kontrolü
         // lowercase yapılacak
         // try kelime uzun olursa hata atıyor
-        // todo kelime de correct word but worng place de kelime uzunluğuna kadar bakıyor
+        //  kelime de correct word but worng place de kelime uzunluğuna kadar bakıyor
         //  eğer kelimeden uzun bir deneme olursa o kısmı doğru yazmıyor
+        // todo cenk kodunda uzun denedik kısa denyeceğiz deneme -> asds gibi
         save(tries.get());
         return CreateTriesResponseDto.builder()
                 .guessedWord(dto.getTriedWords())
@@ -104,5 +108,13 @@ public class TriesService extends ServiceManager<Tries, Long> {
                 .correctlyGuessedLettersInTheWrongPlace(correctlyGuessedLettersInTheWrongPlace)
                 .remainingLife(tries.get().getRemainingLife())
                 .build();
+    }
+    public Integer findRemainingLifeForGames(String token,Long gameId){
+        Optional<Long> authId = jwtTokenProvider.getIdFromToken(token);
+        if (authId.isEmpty()) {
+            throw new GameManagerException(ErrorType.INVALID_TOKEN);
+        }
+        Optional<Integer> life = triesRepository.findMinLifeByGameAndPlayerAuthId(gameId, authId.get());
+        return life.get();
     }
 }
