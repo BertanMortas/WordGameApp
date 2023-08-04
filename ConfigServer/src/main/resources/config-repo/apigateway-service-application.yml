@@ -12,7 +12,7 @@ spring:
         - id: auth-service
           predicates:
             - Path=/auth/**
-          uri: http://localhost:8060 #localhost a çekmeyi unutma
+          uri: http://localhost:8060
           filters:
             - name: CircuitBreaker
               args:
@@ -23,31 +23,19 @@ spring:
           predicates:
             - Path=/user-profile/**
           uri: http://localhost:8090
-          #        - id: user-profile-service-follow
-          #          predicates:
-          #            - Path=/follow/**
-          #          uri: http://localhost:8090
           filters:
             - name: CircuitBreaker
               args:
                 enabled: true
                 fallbackUri: forward:/fallback/user-profile-service
 
-        - id: company-service
+        - id: game-service
           predicates:
-            - Path=/company/**
+            - Path=/game/**
           uri: http://localhost:8070
-        - id: comment-service
+        - id: tries-service
           predicates:
-            - Path=/comment/**
-          uri: http://localhost:8070
-        - id: company-manager-service
-          predicates:
-            - Path=/company-manager/**
-          uri: http://localhost:8070
-        - id: company-profit-service
-          predicates:
-            - Path=/company-profit/**
+            - Path=/tries/**
           uri: http://localhost:8070
           filters:
             - name: CircuitBreaker
@@ -67,6 +55,3 @@ spring:
 
       default-filters:
         - RewritePath= /(?<segment>.*),/api/v1/$\{segment}
-
-          ## CircuitBreaker --> Bu bie devre kesicidir. Gateway e gelen isteklerde bir sorun olduğunda servisler için bir mesaj döner.
-          # hataları tespit ederek devam etmemmelerini sağlar.
