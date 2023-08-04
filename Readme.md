@@ -40,11 +40,11 @@ the word, which determined by Admin, within the specified attempts.
 - `POST /game/create`: Creates a new game and assigns it to the user.
 - `POST /game/check-try`: Allows users to check their try and get the game status.
 
-## Frontend and Backend Technologies
+## Frontend Technologies
 
 The application uses React.js for the frontend, which provides a user-friendly interface 
 for playing the game and interacting with the system. The frontend consumes
-APIs exposed by the backend to manage user authentication, profile creation, and gameplay.
+APIs exposed by the backend to manage user authentication, and gameplay.
 
 ## Backend Technologies
 The backend of the "What Is My Name" application is built using Spring Boot, 
