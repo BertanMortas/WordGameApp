@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class TriesService extends ServiceManager<Tries, Long> {
+public class TriesService extends ServiceManager<Tries, Long>{
     private final ITriesRepository triesRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final GameService gameService;
@@ -26,7 +26,11 @@ public class TriesService extends ServiceManager<Tries, Long> {
         this.gameService = gameService;
     }
 
-
+    /**
+     * Comparable and Comparator interface must be tried
+     * @param dto
+     * @return
+     */
     public CreateTriesResponseDto createTriesFixed(CreateTriesRequestDto dto) {
         Optional<Long> authId = jwtTokenProvider.getIdFromToken(dto.getToken());
         if (authId.isEmpty()) {
@@ -34,7 +38,6 @@ public class TriesService extends ServiceManager<Tries, Long> {
         }
         Optional<Tries> tries = Optional.ofNullable(ITriesMapper.INSTANCE.toTries(dto));
         if (triesRepository.existsByPlayerAuthIdAndGameId(authId.get(),dto.getGameId())) {
-            //tries = triesRepository.findTriesMinLifeByGameAndPlayerId(dto.getGameId(),authId.get());
             Optional<Integer> remainingLife = triesRepository.findMinLifeByGameAndPlayerAuthId(dto.getGameId(),authId.get());
             tries.get().setRemainingLife(remainingLife.get()-1);
             if (remainingLife.get()<=0) {
@@ -43,7 +46,6 @@ public class TriesService extends ServiceManager<Tries, Long> {
         }else{
             tries.get().setRemainingLife(tries.get().getRemainingLife() - 1);
         }
-
         String keyWord = gameService.getKeywordByGameId(dto.getGameId()).toLowerCase();
         if(keyWord.toLowerCase().equals(dto.getTriedWords().toLowerCase()))
             throw new GameManagerException(ErrorType.WIN);
@@ -57,7 +59,6 @@ public class TriesService extends ServiceManager<Tries, Long> {
             char currentChar = dto.getTriedWords().toLowerCase().charAt(i);
             triedWordIndexMap.put(i, currentChar);
         }
-
         StringBuilder result = new StringBuilder();
         Map<Character, Integer> keywordCharCount = new HashMap<>();
         Map<Character, Integer> triedWordCharCount = new HashMap<>();
@@ -111,4 +112,6 @@ public class TriesService extends ServiceManager<Tries, Long> {
         Optional<Integer> life = triesRepository.findMinLifeByGameAndPlayerAuthId(gameId, authId.get());
         return life.get();
     }
+
+
 }

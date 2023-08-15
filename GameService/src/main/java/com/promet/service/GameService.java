@@ -6,6 +6,7 @@ import com.promet.exception.ErrorType;
 import com.promet.exception.GameManagerException;
 import com.promet.mapper.IGameMapper;
 import com.promet.repository.IGameRepository;
+import com.promet.repository.annotation.RoleAnnotation;
 import com.promet.repository.entity.Game;
 import com.promet.utility.JwtTokenProvider;
 import com.promet.utility.ServiceManager;
@@ -24,17 +25,11 @@ public class GameService extends ServiceManager<Game, Long>{
         this.gameRepository = gameRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
+    @RoleAnnotation(newValue = "ADMIN")
     public Boolean createGame(CreateGameRequestDto dto){
-
-        // TODO defoult olan kelime gelmiyor
-
         Optional<Long> authId = jwtTokenProvider.getIdFromToken(dto.getToken());
-        List<String> roles = jwtTokenProvider.getRolesFromToken(dto.getToken());
         if (authId.isEmpty()) {
             throw new GameManagerException(ErrorType.INVALID_TOKEN);
-        }
-        if (!roles.contains("ADMIN")){
-            throw new GameManagerException(ErrorType.AUTHORIZATION_ERROR);
         }
         Game game = IGameMapper.INSTANCE.toGame(dto);
         game.setAuthId(authId.get());
